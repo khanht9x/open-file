@@ -1,5 +1,5 @@
 {
-  "name": "yunxi-auto",
+  "name": "yunxi-open-file",
   "version": "1.0.0",
   "author": "khanht <khanh.t@citigo.com.vn>",
   "description": "An electron-vue project",
@@ -19,8 +19,17 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "yunxi-auto",
+    "productName": "Yunxi File",
     "appId": "com.example.yourapp",
+    "extraResources": [
+      {
+        "from": "./static/",
+        "to": "extraResources",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "directories": {
       "output": "build"
     },

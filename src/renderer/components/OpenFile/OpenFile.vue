@@ -1,13 +1,18 @@
 <template>
   <div id="wrapper">
-    <p>Yunxi File</p>
-    <p v-if="!this.doneExtra && fileExits">Vui lòng chờ trong ít phút để hoàn thành quá trình cài đặt: <span style="color:red"> {{ parseInt(processData) }} % </span></p>
-    <p>{{ pathZip }}</p>
+    <p>Yunxi Auto</p>
+    <div class="version" style="position: fixed; right: 30px; bottom: 30px;">
+      <p><small>Version 1.01</small></p>
+      <p><small>093.595.0000</small></p>
+    </div>
+    <p v-if="!doneExtra && fileExits">Vui lòng chờ trong ít phút để hoàn thành quá trình cài đặt: <span style="color:red"> {{ parseInt(processData) }} % </span></p>
   </div>
 </template>
 
 <script>
 import Seven from 'node-7z'
+import sevenBin from '7zip-bin'
+require('hazardous')
 const path = require('path')
 const fs = require('fs')
 export default {
@@ -16,6 +21,7 @@ export default {
     return {
       path: '',
       pathExcel: '',
+      pathTo7zip: '',
       processData: 0,
       doneExtra: false,
       fileExits: false
@@ -27,8 +33,8 @@ export default {
     }
   },
   mounted () {
+    this.pathTo7zip = sevenBin.path7za.replace('app.asar', 'app.asar.unpacked')
     this.pathZip = path.join(path.dirname(__dirname), '../../extraResources/Yunxi.7z')
-    this.pathExcel = path.join(path.dirname(__dirname), '../../extraResources/yunxi-excel.xls')
     try {
       if (fs.existsSync(this.pathZip)) {
         this.fileExits = true
@@ -39,11 +45,11 @@ export default {
       console.error(err)
     }
 
-    this.open(this.pathExcel)
     if (this.fileExits) {
       // myStream is an Readable stream
       const myStream = Seven.extractFull(this.pathZip, path.join(path.dirname(__dirname), '../../extraResources'), {
-        $progress: true
+        $progress: true,
+        $bin: this.pathTo7zip
       })
 
       myStream.on('data', data => {
@@ -58,7 +64,7 @@ export default {
         this.doneExtra = true
         console.log('Finished extracting')
         try {
-          // fs.unlinkSync(this.pathZip)
+          fs.unlinkSync(this.pathZip)
         } catch (err) {
           console.error(err)
         }
